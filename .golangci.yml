@@ -20,8 +20,8 @@ linters-settings:
 
 run:
   timeout: 5m
-  skip-dirs:
-    - internal/db/generated
 
 issues:
   exclude-use-default: false
+  exclude-dirs:
+    - internal/db/generated
