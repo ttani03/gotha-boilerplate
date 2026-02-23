@@ -1,4 +1,4 @@
-.PHONY: generate build run dev test lint css css-watch docker-up docker-down migrate-up migrate-down migrate-create tilt-up
+.PHONY: generate build run dev dev-down test lint css css-watch docker-up docker-down migrate-up migrate-down migrate-create tilt-up
 
 # =============================================================================
 # Code Generation
@@ -27,6 +27,10 @@ dev: css
 	@echo "Waiting for database to be ready..."
 	@sleep 3
 	air -c .air.toml
+
+## Clean up development state
+dev-down:
+	docker compose -f docker/docker-compose.yml down
 
 # =============================================================================
 # Testing & Linting
