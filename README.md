@@ -33,7 +33,7 @@
 | **Hot Reload** | [Air](https://github.com/air-verse/air) |
 | **Node.js** | [mise](https://mise.jdx.dev/) で管理 |
 | **CI** | [GitHub Actions](.github/workflows/ci.yml) |
-| **Dev Env** | [Docker Compose](docker/docker-compose.yml) / [Tilt](https://tilt.dev/) |
+| **Dev Env** | [Docker Compose](docker/docker-compose.yml) |
 
 ---
 
@@ -44,9 +44,6 @@
 - [Go](https://go.dev/dl/) 1.23+
 - [mise](https://mise.jdx.dev/) — Node.js のバージョン管理
 - [Docker](https://docs.docker.com/get-docker/) & Docker Compose
-
-> [!NOTE]
-> [Tilt](https://docs.tilt.dev/install.html) はオプションです。`make dev` だけで開発を始められます。
 
 ---
 
@@ -93,7 +90,6 @@ make dev
 | `make migrate-up` | マイグレーション適用 |
 | `make migrate-down` | 直前のマイグレーションをロールバック |
 | `make migrate-create` | 新規マイグレーションファイル作成 |
-| `make tilt-up` | Tilt で開発環境を起動 |
 
 ---
 
@@ -130,7 +126,6 @@ gotha-boilerplate/
 ├── .github/workflows/
 │   └── ci.yml               # GitHub Actions CI
 │
-├── Tiltfile                 # Tilt 設定
 ├── Makefile                 # ビルド・開発コマンド
 ├── sqlc.yaml                # sqlc 設定
 ├── .air.toml                # Air ホットリロード設定

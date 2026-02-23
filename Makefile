@@ -1,4 +1,4 @@
-.PHONY: generate build run dev dev-down test lint css css-watch docker-up docker-down migrate-up migrate-down migrate-create tilt-up
+.PHONY: generate build run dev dev-down test lint css css-watch docker-up docker-down migrate-up migrate-down migrate-create
 
 # =============================================================================
 # Code Generation
@@ -87,14 +87,6 @@ migrate-down:
 migrate-create:
 	@read -p "Migration name: " name; \
 	goose -dir $(MIGRATIONS_DIR) create $$name sql
-
-# =============================================================================
-# Tilt (Development)
-# =============================================================================
-
-## Start Tilt for development
-tilt-up:
-	tilt up
 
 # =============================================================================
 # Setup (Initial)
