@@ -1,0 +1,45 @@
+package pages
+
+import "github.com/ttani03/gotha-boilerplate/web/templates/layout"
+import "github.com/ttani03/gotha-boilerplate/web/templates/components"
+import "github.com/ttani03/gotha-boilerplate/internal/db/generated"
+
+// TodoList renders the todo list page.
+// It uses HTMX for partial updates and Alpine.js for interactive UI.
+templ TodoList(todos []generated.Todo) {
+	@layout.Base("Todos") {
+		@components.Navbar(true)
+		<div class="container mx-auto max-w-2xl p-4">
+			<h1 class="text-3xl font-bold mb-6">📝 My Todos</h1>
+			<!-- New todo form: HTMX posts and appends the result to the list -->
+			<form
+				hx-post="/todos"
+				hx-target="#todo-list"
+				hx-swap="afterbegin"
+				hx-on::after-request="this.reset()"
+				class="flex gap-2 mb-6"
+			>
+				<input
+					type="text"
+					name="title"
+					placeholder="新しいタスクを入力..."
+					class="input input-bordered flex-1"
+					required
+				/>
+				<button type="submit" class="btn btn-primary">追加</button>
+			</form>
+			<!-- Todo list container -->
+			<div id="todo-list">
+				for _, todo := range todos {
+					@components.TodoItem(todo)
+				}
+			</div>
+			if len(todos) == 0 {
+				<div class="text-center text-base-content/50 py-12">
+					<p class="text-lg">まだタスクがありません</p>
+					<p class="text-sm">上のフォームから新しいタスクを追加しましょう!</p>
+				</div>
+			}
+		</div>
+	}
+}

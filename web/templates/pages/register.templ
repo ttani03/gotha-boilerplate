@@ -1,0 +1,69 @@
+package pages
+
+import "github.com/ttani03/gotha-boilerplate/web/templates/layout"
+import "github.com/ttani03/gotha-boilerplate/web/templates/components"
+
+// Register renders the registration page.
+// errorMessage is displayed when registration fails.
+templ Register(errorMessage string) {
+	@layout.Base("Register") {
+		@components.Navbar(false)
+		<div class="flex items-center justify-center min-h-[calc(100vh-68px)]">
+			<div class="card w-full max-w-sm bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title justify-center text-2xl">Register</h2>
+					@components.Flash(errorMessage, "error")
+					<form method="POST" action="/register">
+						<div class="form-control">
+							<label class="label" for="name">
+								<span class="label-text">Name</span>
+							</label>
+							<input
+								type="text"
+								id="name"
+								name="name"
+								placeholder="Your name"
+								class="input input-bordered"
+								required
+							/>
+						</div>
+						<div class="form-control mt-4">
+							<label class="label" for="email">
+								<span class="label-text">Email</span>
+							</label>
+							<input
+								type="email"
+								id="email"
+								name="email"
+								placeholder="you@example.com"
+								class="input input-bordered"
+								required
+							/>
+						</div>
+						<div class="form-control mt-4">
+							<label class="label" for="password">
+								<span class="label-text">Password</span>
+							</label>
+							<input
+								type="password"
+								id="password"
+								name="password"
+								placeholder="••••••••"
+								class="input input-bordered"
+								required
+								minlength="8"
+							/>
+						</div>
+						<div class="form-control mt-6">
+							<button type="submit" class="btn btn-primary">Register</button>
+						</div>
+					</form>
+					<p class="text-center text-sm mt-4">
+						既にアカウントをお持ちの方は
+						<a href="/login" class="link link-primary">こちら</a>
+					</p>
+				</div>
+			</div>
+		</div>
+	}
+}

@@ -30,3 +30,15 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Air
+tmp/
+
+# Tailwind CSS build output
+web/static/css/output.css
+
+# Node
+node_modules/
+
+# Templ generated files
+*_templ.go

@@ -1,0 +1,26 @@
+package components
+
+// Navbar renders the navigation bar.
+// It shows different links based on whether the user is authenticated.
+templ Navbar(isAuthenticated bool) {
+	<div class="navbar bg-base-100 shadow-lg">
+		<div class="flex-1">
+			<a href="/" class="btn btn-ghost text-xl">🚀 GOTHA</a>
+		</div>
+		<div class="flex-none">
+			<ul class="menu menu-horizontal px-1">
+				if isAuthenticated {
+					<li><a href="/todos">Todos</a></li>
+					<li>
+						<form method="POST" action="/logout">
+							<button type="submit" class="btn btn-ghost btn-sm">Logout</button>
+						</form>
+					</li>
+				} else {
+					<li><a href="/login">Login</a></li>
+					<li><a href="/register">Register</a></li>
+				}
+			</ul>
+		</div>
+	</div>
+}

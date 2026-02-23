@@ -1,0 +1,18 @@
+package components
+
+// Flash renders a flash message (alert).
+// Uses DaisyUI alert component with Alpine.js auto-dismiss.
+templ Flash(message string, alertType string) {
+	if message != "" {
+		<div
+			x-data="{ show: true }"
+			x-show="show"
+			x-init="setTimeout(() => show = false, 3000)"
+			x-transition
+			class={ "alert", "alert-" + alertType, "mb-4" }
+		>
+			<span>{ message }</span>
+			<button class="btn btn-sm btn-ghost" @click="show = false">✕</button>
+		</div>
+	}
+}

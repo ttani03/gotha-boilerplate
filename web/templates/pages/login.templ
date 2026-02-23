@@ -1,0 +1,55 @@
+package pages
+
+import "github.com/ttani03/gotha-boilerplate/web/templates/layout"
+import "github.com/ttani03/gotha-boilerplate/web/templates/components"
+
+// Login renders the login page.
+// errorMessage is displayed when login fails.
+templ Login(errorMessage string) {
+	@layout.Base("Login") {
+		@components.Navbar(false)
+		<div class="flex items-center justify-center min-h-[calc(100vh-68px)]">
+			<div class="card w-full max-w-sm bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title justify-center text-2xl">Login</h2>
+					@components.Flash(errorMessage, "error")
+					<form method="POST" action="/login">
+						<div class="form-control">
+							<label class="label" for="email">
+								<span class="label-text">Email</span>
+							</label>
+							<input
+								type="email"
+								id="email"
+								name="email"
+								placeholder="you@example.com"
+								class="input input-bordered"
+								required
+							/>
+						</div>
+						<div class="form-control mt-4">
+							<label class="label" for="password">
+								<span class="label-text">Password</span>
+							</label>
+							<input
+								type="password"
+								id="password"
+								name="password"
+								placeholder="••••••••"
+								class="input input-bordered"
+								required
+							/>
+						</div>
+						<div class="form-control mt-6">
+							<button type="submit" class="btn btn-primary">Login</button>
+						</div>
+					</form>
+					<p class="text-center text-sm mt-4">
+						アカウントをお持ちでない方は
+						<a href="/register" class="link link-primary">こちら</a>
+					</p>
+				</div>
+			</div>
+		</div>
+	}
+}

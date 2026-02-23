@@ -1,0 +1,26 @@
+package pages
+
+import "github.com/ttani03/gotha-boilerplate/web/templates/layout"
+import "github.com/ttani03/gotha-boilerplate/web/templates/components"
+
+// Home renders the home page.
+templ Home() {
+	@layout.Base("Home") {
+		@components.Navbar(false)
+		<div class="hero min-h-[calc(100vh-68px)]">
+			<div class="hero-content text-center">
+				<div class="max-w-md">
+					<h1 class="text-5xl font-bold">GOTHA Stack</h1>
+					<p class="py-6">
+						Go + Templ + HTMX + Alpine.js で構築された
+						モダンな Web アプリケーション boilerplate です。
+					</p>
+					<div class="flex gap-4 justify-center">
+						<a href="/register" class="btn btn-primary">Get Started</a>
+						<a href="/login" class="btn btn-outline">Login</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}

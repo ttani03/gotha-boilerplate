@@ -1,0 +1,28 @@
+# ============================================================================
+# Development Dockerfile: Uses air for hot reload
+# ============================================================================
+FROM golang:1.23-alpine
+
+RUN apk add --no-cache nodejs npm git
+
+WORKDIR /app
+
+# Install Go tools
+RUN go install github.com/a-h/templ/cmd/templ@latest && \
+  go install github.com/air-verse/air@latest && \
+  go install github.com/pressly/goose/v3/cmd/goose@latest
+
+# Install Node dependencies
+COPY package.json package-lock.json* ./
+RUN npm install
+
+# Copy Go dependencies
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+EXPOSE 8080
+
+CMD ["air", "-c", ".air.toml"]

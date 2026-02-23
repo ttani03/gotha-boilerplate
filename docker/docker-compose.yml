@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gotha
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      ENV: development
+      DATABASE_URL: postgres://postgres:postgres@db:5432/gotha?sslmode=disable
+      JWT_SECRET: dev-secret-key-change-in-production
+      JWT_ACCESS_TOKEN_DURATION: "15m"
+      JWT_REFRESH_TOKEN_DURATION: "168h"
+    volumes:
+      - ..:/app
+      - go-mod-cache:/go/pkg/mod
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  go-mod-cache:

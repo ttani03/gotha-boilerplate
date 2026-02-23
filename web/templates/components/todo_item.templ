@@ -1,0 +1,79 @@
+package components
+
+import (
+	"encoding/hex"
+	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/ttani03/gotha-boilerplate/internal/db/generated"
+)
+
+// fmtUUID converts a pgtype.UUID to a standard UUID string format.
+func fmtUUID(u pgtype.UUID) string {
+	if !u.Valid {
+		return ""
+	}
+	b := u.Bytes
+	return hex.EncodeToString(b[0:4]) + "-" +
+		hex.EncodeToString(b[4:6]) + "-" +
+		hex.EncodeToString(b[6:8]) + "-" +
+		hex.EncodeToString(b[8:10]) + "-" +
+		hex.EncodeToString(b[10:16])
+}
+
+// TodoItem renders a single todo item.
+// Uses HTMX for inline updates and Alpine.js for confirmation dialog.
+templ TodoItem(todo generated.Todo) {
+	<div
+		id={ "todo-" + fmtUUID(todo.ID) }
+		class="card bg-base-100 shadow-sm mb-2"
+		x-data="{ editing: false }"
+	>
+		<div class="card-body p-4 flex-row items-center gap-4">
+			<!-- Toggle checkbox: sends PATCH request via HTMX -->
+			<input
+				type="checkbox"
+				class="checkbox checkbox-primary"
+				checked?={ todo.Completed }
+				hx-patch={ "/todos/" + fmtUUID(todo.ID) + "/toggle" }
+				hx-target={ "#todo-" + fmtUUID(todo.ID) }
+				hx-swap="outerHTML"
+			/>
+			<!-- Title display / inline edit -->
+			<div class="flex-1" x-show="!editing">
+				<span class={ "text-lg", templ.KV("line-through opacity-50", todo.Completed) }>
+					{ todo.Title }
+				</span>
+			</div>
+			<!-- Inline edit form (shown when editing) -->
+			<form
+				class="flex-1 flex gap-2"
+				x-show="editing"
+				hx-put={ "/todos/" + fmtUUID(todo.ID) }
+				hx-target={ "#todo-" + fmtUUID(todo.ID) }
+				hx-swap="outerHTML"
+				@htmx:after-request="editing = false"
+			>
+				<input
+					type="text"
+					name="title"
+					value={ todo.Title }
+					class="input input-bordered input-sm flex-1"
+				/>
+				<button type="submit" class="btn btn-sm btn-primary">Save</button>
+				<button type="button" class="btn btn-sm btn-ghost" @click="editing = false">Cancel</button>
+			</form>
+			<!-- Action buttons -->
+			<div class="flex gap-1" x-show="!editing">
+				<button class="btn btn-sm btn-ghost" @click="editing = true">✏️</button>
+				<button
+					class="btn btn-sm btn-ghost text-error"
+					hx-delete={ "/todos/" + fmtUUID(todo.ID) }
+					hx-target={ "#todo-" + fmtUUID(todo.ID) }
+					hx-swap="outerHTML"
+					hx-confirm="本当に削除しますか？"
+				>
+					🗑️
+				</button>
+			</div>
+		</div>
+	</div>
+}
