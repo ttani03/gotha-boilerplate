@@ -1,27 +1,30 @@
+version: "2"
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    gofmt:
+      simplify: false
+
 linters:
   enable:
-    - errcheck
-    - govet
+    - gosec
+    - err113
+    - mnd
+    - loggercheck
     - staticcheck
-    - unused
-    - gosimple
-    - ineffassign
-    - typecheck
-    - misspell
-    - gofmt
-    - revive
-
-linters-settings:
-  revive:
-    rules:
-      - name: exported
-        arguments:
-          - "checkPrivateReceivers"
+    - govet
+  settings:
+    govet:
+      enable-all: true
+    copyloopvar:
+      check-alias: true
+  exclusions:
+    paths:
+      - internal/db/generated
 
 run:
   timeout: 5m
-
-issues:
-  exclude-use-default: false
-  exclude-dirs:
-    - internal/db/generated
