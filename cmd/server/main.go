@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"net/http"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+
 	"github.com/ttani03/gotha-boilerplate/internal/config"
 	"github.com/ttani03/gotha-boilerplate/internal/db"
 	"github.com/ttani03/gotha-boilerplate/internal/server"
@@ -22,14 +24,24 @@ func main() {
 	}
 }
 
+const (
+	defaultReadTimeout     = 10 * time.Second
+	defaultWriteTimeout    = 30 * time.Second
+	defaultIdleTimeout     = 60 * time.Second
+	defaultShutdownTimeout = 10 * time.Second
+)
+
 func run() error {
 	// Load .env file if present (ignored in production where env vars are set directly)
 	_ = godotenv.Load()
 
+	// Initialize logger
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
 	// Load configuration
 	cfg, err := config.Load()
 	if err != nil {
-		slog.Error("failed to load config", "error", err)
+		logger.Error("failed to load config", "error", err)
 		return err
 	}
 
@@ -37,7 +49,7 @@ func run() error {
 	ctx := context.Background()
 	pool, err := db.Connect(ctx, cfg.DatabaseURL)
 	if err != nil {
-		slog.Error("failed to connect to database", "error", err)
+		logger.ErrorContext(ctx, "failed to connect to database", "error", err)
 		return err
 	}
 	defer pool.Close()
@@ -47,9 +59,9 @@ func run() error {
 	srv := &http.Server{
 		Addr:         ":" + cfg.Port,
 		Handler:      handler,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		ReadTimeout:  defaultReadTimeout,
+		WriteTimeout: defaultWriteTimeout,
+		IdleTimeout:  defaultIdleTimeout,
 	}
 
 	// Graceful shutdown
@@ -58,21 +70,21 @@ func run() error {
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 		<-sigChan
 
-		slog.Info("shutting down server...")
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		logger.Info("shutting down server...")
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), defaultShutdownTimeout)
 		defer cancel()
 
-		if err := srv.Shutdown(shutdownCtx); err != nil {
-			slog.Error("server shutdown error", "error", err)
+		if err = srv.Shutdown(shutdownCtx); err != nil {
+			logger.ErrorContext(shutdownCtx, "server shutdown error", "error", err)
 		}
 	}()
 
-	slog.Info("server starting", "port", cfg.Port, "env", cfg.Env)
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		slog.Error("server error", "error", err)
+	logger.Info("server starting", "port", cfg.Port, "env", cfg.Env)
+	if err = srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		logger.Error("server error", "error", err)
 		return err
 	}
 
-	slog.Info("server stopped")
+	logger.Info("server stopped")
 	return nil
 }
