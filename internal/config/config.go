@@ -2,6 +2,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -12,7 +13,7 @@ type Config struct {
 	Port                    string
 	Env                     string
 	DatabaseURL             string
-	JWTSecret               string
+	JWTSecret               string `json:"-"`
 	JWTAccessTokenDuration  time.Duration
 	JWTRefreshTokenDuration time.Duration
 }
@@ -23,12 +24,12 @@ func Load() (*Config, error) {
 	env := getEnv("ENV", "development")
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL == "" {
-		return nil, fmt.Errorf("DATABASE_URL is required")
+		return nil, errors.New("DATABASE_URL is required")
 	}
 
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
-		return nil, fmt.Errorf("JWT_SECRET is required")
+		return nil, errors.New("JWT_SECRET is required")
 	}
 
 	accessDuration, err := time.ParseDuration(getEnv("JWT_ACCESS_TOKEN_DURATION", "15m"))

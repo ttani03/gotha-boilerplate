@@ -19,6 +19,8 @@ import (
 	"github.com/ttani03/gotha-boilerplate/web/templates/pages"
 )
 
+const refreshTokenLength = 32
+
 // AuthHandler handles authentication-related requests.
 type AuthHandler struct {
 	db      *pgxpool.Pool
@@ -72,7 +74,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.setTokenCookies(w, r, uuidToString(user.ID)); err != nil {
+	if err = h.setTokenCookies(w, r, uuidToString(user.ID)); err != nil {
 		render(w, r, pages.Register("内部エラーが発生しました"))
 		return
 	}
@@ -101,12 +103,12 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+	if err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
 		render(w, r, pages.Login("メールアドレスまたはパスワードが正しくありません"))
 		return
 	}
 
-	if err := h.setTokenCookies(w, r, uuidToString(user.ID)); err != nil {
+	if err = h.setTokenCookies(w, r, uuidToString(user.ID)); err != nil {
 		render(w, r, pages.Login("内部エラーが発生しました"))
 		return
 	}
@@ -162,7 +164,7 @@ func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	_ = h.queries.DeleteRefreshTokenByHash(r.Context(), hash)
 
 	// Issue new tokens
-	if err := h.setTokenCookies(w, r, uuidToString(token.UserID)); err != nil {
+	if err = h.setTokenCookies(w, r, uuidToString(token.UserID)); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -224,7 +226,7 @@ func (h *AuthHandler) generateAccessToken(userID string) (string, error) {
 // generateRefreshToken creates a new refresh token and stores it in the database.
 func (h *AuthHandler) generateRefreshToken(r *http.Request, userID string) (string, error) {
 	// Generate random token
-	b := make([]byte, 32)
+	b := make([]byte, refreshTokenLength)
 	if _, err := rand.Read(b); err != nil {
 		return "", err
 	}

@@ -24,7 +24,7 @@ func Auth(jwtSecret string) func(http.Handler) http.Handler {
 			}
 
 			claims := &jwt.RegisteredClaims{}
-			token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
+			token, err := jwt.ParseWithClaims(tokenStr, claims, func(_ *jwt.Token) (interface{}, error) {
 				return []byte(jwtSecret), nil
 			})
 			if err != nil || !token.Valid {
@@ -47,8 +47,8 @@ func extractToken(r *http.Request) string {
 
 	// Fall back to Authorization header
 	authHeader := r.Header.Get("Authorization")
-	if strings.HasPrefix(authHeader, "Bearer ") {
-		return strings.TrimPrefix(authHeader, "Bearer ")
+	if token, found := strings.CutPrefix(authHeader, "Bearer "); found {
+		return token
 	}
 
 	return ""
