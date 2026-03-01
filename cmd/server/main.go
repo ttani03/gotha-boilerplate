@@ -17,6 +17,12 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		os.Exit(1)
+	}
+}
+
+func run() error {
 	// Load .env file if present (ignored in production where env vars are set directly)
 	_ = godotenv.Load()
 
@@ -24,7 +30,7 @@ func main() {
 	cfg, err := config.Load()
 	if err != nil {
 		slog.Error("failed to load config", "error", err)
-		os.Exit(1)
+		return err
 	}
 
 	// Connect to database
@@ -32,7 +38,7 @@ func main() {
 	pool, err := db.Connect(ctx, cfg.DatabaseURL)
 	if err != nil {
 		slog.Error("failed to connect to database", "error", err)
-		os.Exit(1)
+		return err
 	}
 	defer pool.Close()
 
@@ -64,8 +70,9 @@ func main() {
 	slog.Info("server starting", "port", cfg.Port, "env", cfg.Env)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		slog.Error("server error", "error", err)
-		os.Exit(1)
+		return err
 	}
 
 	slog.Info("server stopped")
+	return nil
 }
