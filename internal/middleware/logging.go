@@ -28,7 +28,7 @@ func Logging(next http.Handler) http.Handler {
 
 		next.ServeHTTP(rw, r)
 
-		slog.Info("request",
+		slog.Info("request", //nolint:gosec // structured key-value logging, no injection risk
 			"method", r.Method,
 			"path", r.URL.Path,
 			"status", rw.statusCode,

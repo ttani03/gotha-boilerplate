@@ -37,6 +37,7 @@ func run() error {
 
 	// Initialize logger
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
 
 	// Load configuration
 	cfg, err := config.Load()

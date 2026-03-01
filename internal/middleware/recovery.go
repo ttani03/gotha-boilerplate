@@ -10,7 +10,7 @@ func Recovery(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				slog.Error("panic recovered",
+				slog.Error("panic recovered", //nolint:gosec // structured key-value logging, no injection risk
 					"error", err,
 					"method", r.Method,
 					"path", r.URL.Path,

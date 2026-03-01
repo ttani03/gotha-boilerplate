@@ -24,7 +24,7 @@ func Auth(jwtSecret string) func(http.Handler) http.Handler {
 			}
 
 			claims := &jwt.RegisteredClaims{}
-			token, err := jwt.ParseWithClaims(tokenStr, claims, func(_ *jwt.Token) (interface{}, error) {
+			token, err := jwt.ParseWithClaims(tokenStr, claims, func(_ *jwt.Token) (any, error) {
 				return []byte(jwtSecret), nil
 			})
 			if err != nil || !token.Valid {
